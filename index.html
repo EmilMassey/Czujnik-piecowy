@@ -14,6 +14,11 @@
 				max-height: 100%;
 			}
 
+			html {
+				height: 100%;
+				overflow: hidden;
+			}
+
 			body {
 				text-align: center;
 				font-size: 80px;
@@ -33,7 +38,7 @@
 				opacity: 0;
 				margin: 0;
 				padding: 0;
-				overflow: hidden;
+				max-height: 100%;
 			}
 
 			.light {
@@ -73,7 +78,7 @@
 	</head>
 	<body>
 		<div class="temp">
-			<span><em id="temp">-</em> &deg;C</span>
+			<span id="temp">- &deg;C</span>
 		</div>
 
 		<div class="light">
@@ -94,7 +99,7 @@
 						var current = data.feeds[data.feeds.length-1];
 
 						var temp = current.field1;
-						$('#temp').text(temp);						
+						$('#temp').html(temp + " &deg;C");						
 
 						var light = current.field2;
 						if(light >= 600)
@@ -112,13 +117,10 @@
 				pobierzDane();
 				setInterval(pobierzDane, 10000);
 
-				$(window).resize(function() {
+				setInterval(function() { 
 					$('body>div').height($(window).height()/2);
 					$('body').animate({opacity: 1}, 1000);
 					$('#light_on').css('left', $('#light_off').offset().left);
-				}).resize();
-
-				setInterval(function() { 
 					$('.temp').textfill({maxFontPixels: 1000});
 				}, 250);
 			});
