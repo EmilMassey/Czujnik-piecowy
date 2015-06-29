@@ -4,11 +4,66 @@
 		<title>Czujnik piecowy</title>
 
 		<style>
+			@font-face {
+				font-family: 'Open Sans';
+				src: url(OpenSans-Light.ttf);
+			}
+
+			* {
+				max-width: 100%;
+				max-height: 100%;
+			}
+
 			body {
 				text-align: center;
 				font-size: 80px;
-				font-family: sans-serif;
+				font-family: 'Open Sans', sans-serif;				
+				background: rgba(69,230,152,1);
+				background: -moz-linear-gradient(-45deg, rgba(69,230,152,1) 0%, rgba(5,105,171,1) 100%);
+				background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(69,230,152,1)), color-stop(100%, rgba(5,105,171,1)));
+				background: -webkit-linear-gradient(-45deg, rgba(69,230,152,1) 0%, rgba(5,105,171,1) 100%);
+				background: -o-linear-gradient(-45deg, rgba(69,230,152,1) 0%, rgba(5,105,171,1) 100%);
+				background: -ms-linear-gradient(-45deg, rgba(69,230,152,1) 0%, rgba(5,105,171,1) 100%);
+				background: linear-gradient(135deg, rgba(69,230,152,1) 0%, rgba(5,105,171,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45e698', endColorstr='#0569ab', GradientType=1 );
+				color: #fff;
+				color: rgba(255,255,255,.85);
+				text-shadow: 0 0 5px rgba(255,255,255,.4);
+				font-weight: 300;
+				opacity: 0;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
 			}
+
+			.light {
+				position: relative;
+				width: auto;
+				margin: auto;
+			}
+
+			img {
+				display: inline-block;
+			}
+
+			#light_on {
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+			}
+
+			.temp {
+				display: table;
+				width: 100%;
+				white-space: nowrap;
+			}
+
+			.temp>span {
+				display: table-cell;
+				vertical-align: middle;
+			}
+
 			@media(max-width: 767px) {
 				body {
 					font-size: 24px;
@@ -17,27 +72,35 @@
 		</style>
 	</head>
 	<body>
-		<p><strong>Temp: </strong><span id="temp"></span> &deg;C</p>
-		<p><strong>Światło: </strong><span id="light"></span></p>
+		<div class="temp">
+			<span><span id="temp">-</span> &deg;C</span>
+		</div>
 
-		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<div class="light">
+			<img src="bulb_off.png" alt="" id="light_off">
+			<img src="bulb_on.png" alt="" id="light_on">
+		</div>
+
+		<script src="jquery-2.1.4.min.js"></script>
+		<script src="jquery.textfill.min.js"></script>
+
 		<script>
 			function pobierzDane() {
 				$.ajax({
 					url: 'https://api.thingspeak.com/channels/44390/feed.json?key=2FOE9W6A3QT94VCR',
 					method: 'GET',
-					dataType: 'json',
+					dataType: 'jsonp',
 					success: function(data) {
 						var current = data.feeds[data.feeds.length-1];
 
 						var temp = current.field1;
-						$('#temp').text(temp);
+						$('#temp').text(temp);						
 
 						var light = current.field2;
 						if(light >= 600)
-							$('#light').text('Włączone').css('color', 'green');
+							$('#light_on').animate({opacity: 1}, 1000);
 						else
-							$('#light').text('Wyłączone').css('color', 'blue');
+							$('#light_on').animate({opacity: 0}, 1000);
 					},
 					error: function() {
 						console.log('Błąd');
@@ -47,7 +110,17 @@
 
 			$(document).ready(function() {
 				pobierzDane();
-				setInterval(pobierzDane, 60000);
+				setInterval(pobierzDane, 10000);
+
+				$(window).resize(function() {
+					$('body>div').height($(window).height()/2);
+					$('body').animate({opacity: 1}, 1000);
+					$('#light_on').css('left', $('#light_off').offset().left);
+				}).resize();
+
+				setInterval(function() { 
+					$('.temp').textfill({maxFontPixels: 1000});
+				}, 250);
 			});
 		</script>
 	</body>
