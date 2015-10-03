@@ -102,7 +102,7 @@
 						$('#temp').html(temp + " &deg;C");						
 
 						var light = current.field2;
-						if(light >= 600)
+						if(light >= 300)
 							$('#light_on').animate({opacity: 1}, 1000);
 						else
 							$('#light_on').animate({opacity: 0}, 1000);
@@ -116,10 +116,11 @@
 			$(document).ready(function() {
 				pobierzDane();
 				setInterval(pobierzDane, 10000);
+				
+				$('body').animate({opacity: 1}, 1000);
 
 				setInterval(function() { 
 					$('body>div').height($(window).height()/2);
-					$('body').animate({opacity: 1}, 1000);
 					$('#light_on').css('left', $('#light_off').offset().left);
 					$('.temp').textfill({maxFontPixels: 1000});
 				}, 250);
